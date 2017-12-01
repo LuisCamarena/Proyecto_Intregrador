@@ -1,0 +1,80 @@
+<html>
+   <head>
+      <title>Proyecto de iluminarias</title>
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet">
+      <link href="static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+      <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+      <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic" rel="stylesheet" type="text/css">
+      <link href="static/css/freelancer.min.css" rel="stylesheet">
+   </head>
+   <body id="page-top" cz-shortcut-listen="true">
+      <nav id="mainNav" class="navbar navbar-expand-lg navbar-light fixed-top">
+         <div class="container"><a class="navbar-brand js-scroll-trigger">Proyecto de iluminaria</a></div>
+      </nav>
+      <section id="portafolio">
+         <div class="container">
+            <h2 class="text-center"></h2>
+            <hr class="star-primary">
+            <div class="row">
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="2" class="portfolio-link btnEncender"><img id="f2" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="3" class="portfolio-link btnEncender"><img id="f3" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="4" class="portfolio-link btnEncender"><img id="f4" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="5" class="portfolio-link btnEncender"><img id="f5" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="6" class="portfolio-link btnEncender"><img id="f6" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="7" class="portfolio-link btnEncender"><img id="f7" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="8" class="portfolio-link btnEncender"><img id="f8" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+               <div class="col-sm-3 portfolio-item"><a href="#" data-pin="9" class="portfolio-link btnEncender"><img id="f9" src="static/img/foco.jpg" alt="foco" class="img-fluid"></a></div>
+            </div>
+         </div>
+      </section>
+      <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.js"></script>
+      <script type="text/javascript">
+          $(function () {
+
+            var focos = {};
+            var socket = io();
+            
+            $('.btnEncender').click(function(){
+              pin = $(this).data("pin");              
+              var urlserver = "http://192.168.11.15/?pin="+pin;
+              console.log(urlserver);
+              $.get(urlserver, function() {
+                /*encendido = eval("focos.f"+pin);
+                if(encendido==1){ // foco esta encendido
+                  eval("focos.f"+pin+"='0'");
+                }else{ // foco esta apagado
+                  eval("focos.f"+pin+"='1'");
+                }
+                socket.emit('arduino', focos );*/
+              });
+
+              encendido = eval("focos.f"+pin);
+              if(encendido==1){ // foco esta encendido
+                eval("focos.f"+pin+"='0'");
+              }else{ // foco esta apagado
+                eval("focos.f"+pin+"='1'");
+              }
+              socket.emit('arduino', focos );
+
+              return false;
+            });
+
+            socket.on('recibido', function(objeto){
+              focos = objeto.datos;
+              console.log(focos);
+              for(var key in focos) {
+                foco = key; // f2 o f3 o f4 o f5 o f6 ...
+                estado = focos[key];
+                if(estado==1){ // enciendo el foco
+                  $("#"+foco).attr("src","static/img/foco_encendido.jpg");
+                }else{ // apago el foco
+                  $("#"+foco).attr("src","static/img/foco.jpg");
+                }
+              }
+            });
+
+          });
+      </script>
+   </body>
+</html>
